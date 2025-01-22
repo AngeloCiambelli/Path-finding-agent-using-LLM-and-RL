@@ -59,20 +59,20 @@ if __name__ == '__main__':
     env = Environment(size=size, terminal_state=pos_bottom_left_corner)
 
     # Testing getting the type of Position in a given environment
-    assert pos_bottom_left_corner.get_type_according_to_environment(env) == 'corner'
-    assert pos_bottom_right_corner.get_type_according_to_environment(env) == 'corner'
-    assert pos_top_left_corner.get_type_according_to_environment(env) == 'corner'
-    assert pos_top_right_corner.get_type_according_to_environment(env) == 'corner'
+    assert pos_bottom_left_corner.get_nature_according_to_environment(env) == 'bottom left corner'
+    assert pos_bottom_right_corner.get_nature_according_to_environment(env) == 'bottom right corner'
+    assert pos_top_left_corner.get_nature_according_to_environment(env) == 'top left corner'
+    assert pos_top_right_corner.get_nature_according_to_environment(env) == 'top right corner'
 
     pos_left_border = Position(0, np.random.randint(1, size - 2))
     pos_right_border = Position(size - 1, np.random.randint(1, size - 2))
     pos_bottom_border = Position(np.random.randint(1, size - 2), 0)
     pos_top_border = Position(np.random.randint(1, size - 2), size - 1)
 
-    assert pos_left_border.get_type_according_to_environment(env) == 'border'
-    assert pos_right_border.get_type_according_to_environment(env) == 'border'
-    assert pos_bottom_border.get_type_according_to_environment(env) == 'border'
-    assert pos_top_border.get_type_according_to_environment(env) == 'border'
+    assert pos_left_border.get_nature_according_to_environment(env) == 'left border'
+    assert pos_right_border.get_nature_according_to_environment(env) == 'right border'
+    assert pos_bottom_border.get_nature_according_to_environment(env) == 'bottom border'
+    assert pos_top_border.get_nature_according_to_environment(env) == 'top border'
 
     random_pos = Position(np.random.randint(1, size - 2), np.random.randint(1, size - 2))
-    assert random_pos.get_type_according_to_environment(env) == 'free'
+    assert random_pos.get_nature_according_to_environment(env) == 'free'
