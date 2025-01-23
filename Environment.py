@@ -10,8 +10,10 @@ class Environment:
     policy: list
     reward : float
     discount : float
+    exploration_exploitation_parameter : float
 
-    def __init__(self, size: int, terminal_state: Position, reward: float = -1., discount: float = 1.):
+    def __init__(self, size: int, terminal_state: Position, reward: float = -1., discount: float = 1.,
+                 exploration_exploitation_parameter: float = 0.):
         self.size = size
 
         self.possible_actions = [Position(-1, 0), Position(0, -1), Position(1, 0), Position(0, 1)]
@@ -27,6 +29,7 @@ class Environment:
 
         self.reward = reward
         self.discount = discount
+        self.exploration_exploitation_parameter = exploration_exploitation_parameter
 
     def __repr__(self):
         return str(self.state_values)
@@ -43,7 +46,7 @@ class Environment:
         self.policy[2, :, -1] = 0.
         self.policy[3, -1, :] = 0.
 
-        self.policy /= np.sum(self.policy, axis=0, keepdims=True)
+        self.policy /= np.sum(self.policy, axis=0)
 
     def create_action_values(self):
         self.action_values = np.random.random((4, size, size))  # four possible action for each state
@@ -105,6 +108,11 @@ class Environment:
     def get_state_value_at_position_for_action(self, position: Position) -> float:
         return self.state_values[position.x, position.y]
 
+    def update_policy_softmax(self):
+        self.policy = np.exp(self.action_values) / np.sum(np.exp(self.action_values), axis=0)
+
+    def update_policy_greedily(self):
+        pass
 
 if __name__ == '__main__':
     np.random.seed(seed=1)
@@ -135,3 +143,9 @@ if __name__ == '__main__':
 
     env.update_action_values()
     print(f"Action values (after the update):\n {env.action_values}\n")
+
+
+    print(f"Policy:\n {env.policy}\n")
+    env.update_policy_softmax()
+    print(f"Policy (after softmax update):\n {env.policy}\n")
+
