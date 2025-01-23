@@ -10,10 +10,10 @@ class Environment:
     policy: list
     reward : float
     discount : float
-    exploration_exploitation_parameter : float
+    epsilon : float
 
     def __init__(self, size: int, terminal_state: Position, reward: float = -1., discount: float = 1.,
-                 exploration_exploitation_parameter: float = 0.):
+                 exploration_exploitation_parameter: float = 1.):
         self.size = size
 
         self.possible_actions = [Position(-1, 0), Position(0, -1), Position(1, 0), Position(0, 1)]
@@ -29,7 +29,7 @@ class Environment:
 
         self.reward = reward
         self.discount = discount
-        self.exploration_exploitation_parameter = exploration_exploitation_parameter
+        self.epsilon = exploration_exploitation_parameter
 
     def __repr__(self):
         return str(self.state_values)
@@ -109,7 +109,7 @@ class Environment:
         return self.state_values[position.x, position.y]
 
     def update_policy_with_softmax(self):
-        self.policy = np.exp(self.action_values) / np.sum(np.exp(self.action_values), axis=0)
+        self.policy = np.exp(self.action_values / self.epsilon) / np.sum(np.exp(self.action_values / self.epsilon), axis=0)
 
     def update_policy_greedily(self):
         self.policy = (self.action_values == np.max(self.action_values, axis=0)).astype(float)
