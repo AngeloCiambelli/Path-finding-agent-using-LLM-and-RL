@@ -14,15 +14,16 @@ class Environment:
     def __init__(self, size: int, terminal_state: Position, reward: float = -1., discount: float = 1.):
         self.size = size
 
-        self.possible_actions = [Position(0, -1), Position(0, 1), Position(-1, 0), Position(1, 0)]
+        self.possible_actions = [Position(-1, 0), Position(0, -1), Position(1, 0), Position(0, 1)]
 
         self.terminal_state = terminal_state
         self.state_values = np.random.random((size, size))
         self.state_values[terminal_state.x, terminal_state.y] = 0
 
-        self.action_values = np.random.random((size, size, 4))  # four possible maximum action for each state
+        self.action_values = np.zeros((4, size, size))  # four possible action for each state
 
         self.create_policy()
+        self.create_action_values()
 
         self.reward = reward
         self.discount = discount
@@ -33,9 +34,10 @@ class Environment:
     def create_policy(self):
         # policy is of dimension 4 * size * size, for each state of the environment, it stores the four probabilities
         # associated to each of its four possible action :
-        # 0/3 array -> moving left action ; 1/3 -> moving up ; 2/3 -> moving right ; 3/3 -> moving down
+        # first N*N array -> moving left action ; Second N*N array -> moving up
+        # Third N*N array -> moving right action ; Last of the four N*N array -> moving down
         self.policy = 0.25 * np.ones((4, self.size, self.size))
-        # There is a zero probability of stepping out of the environment
+        # Setting all the probability to select actions that step out of the environment to zero
         self.policy[0, :, 0] = 0.
         self.policy[1, 0, :] = 0.
         self.policy[2, :, -1] = 0.
@@ -43,17 +45,17 @@ class Environment:
 
         self.policy /= np.sum(self.policy, axis=0, keepdims=True)
 
-    def get_state_values_at_position(self, position: Position) -> float:
-        if position.x < 0 or position.y < 0 or position.x > self.size - 1 or position.y > self.size - 1:
-            return 0.0
-        else:
-            return self.state_values[position.x, position.y]
-
-    def get_actions_probabilities_at_position(self, position: Position) -> list:
-        return self.policy[:, position.y, position.x]
+    def create_action_values(self):
+        self.action_values = np.random.random((4, size, size))  # four possible action for each state
+        # Setting all the action values associated to actions that step out of the environment to -infinity so that they
+        # will not be selected during policy improvement
+        self.action_values[0, :, 0] = -np.inf
+        self.action_values[1, 0, :] = -np.inf
+        self.action_values[2, :, -1] = -np.inf
+        self.action_values[3, -1, :] = -np.inf
 
     def update_state_values(self):
-        variation = 0
+        variation = 0  # to quantify the convergence
         for i in range(self.size):
             for j in range(self.size):
                 # Don't parse the terminal state
@@ -71,25 +73,45 @@ class Environment:
 
         new_state_value = 0
         for pos, action_proba in zip(possible_future_positions, action_probabilities):
-            new_state_value += action_proba * (self.reward + self.discount * self.get_state_values_at_position(pos))
+            new_state_value += action_proba * (self.reward + self.discount * self.get_state_value_at_position(pos))
 
         return new_state_value
 
+    def get_actions_probabilities_at_position(self, position: Position) -> list:
+        return self.policy[:, position.y, position.x]
+
+    def get_state_value_at_position(self, position: Position) -> float:
+        if self.is_position_out_of_the_environment(position):
+            return 0.0
+        else:
+            return self.state_values[position.x, position.y]
+
     def update_action_values(self):
+        variation = 0.
         for i in range(self.size):
             for j in range(self.size):
-                if i != self.terminal_state.x and j != self.terminal_state.y:
-                    for a, k in enumerate(self.possible_actions):
-                        self.action_values[i, j, k] = self.compute_action_value_at_position_for_action(Position(i, j), a)
+                for k, a in enumerate(self.possible_actions):
+                    # print(f"Action: {a}")
+                    if not self.is_position_out_of_the_environment(Position(i, j) + a):  # test if action is taking us outside
+                        new_action_value = self.compute_action_value_at_position_for_action(Position(i, j), a)
+                        self.action_values[k, j, i] = new_action_value
+
+    def is_position_out_of_the_environment(self, position: Position) -> bool:
+        return position.x < 0 or position.y < 0 or position.x > self.size - 1 or position.y > self.size - 1
 
     def compute_action_value_at_position_for_action(self, position: Position, action: Position) -> float:
-        return self.reward + self.discount * self.get_state_values_at_position(position + action)
+        return self.reward + self.discount * self.get_state_value_at_position_for_action(position + action)
+
+    def get_state_value_at_position_for_action(self, position: Position) -> float:
+        return self.state_values[position.x, position.y]
 
 
 if __name__ == '__main__':
     np.random.seed(seed=1)
 
     size = 4
+
+    # Some positions
     pos_bottom_left_corner = Position(0, 0)
     pos_bottom_right_corner = Position(size - 1, 0)
     pos_top_left_corner = Position(0, size - 1)
@@ -101,16 +123,15 @@ if __name__ == '__main__':
     pos_top_border = Position(np.random.randint(1, size - 2), size - 1)
 
     env = Environment(size=size, terminal_state=pos_bottom_left_corner)
-    print(env)
-    print(env.policy[:, 0, 3])
-
-    print(env.compute_new_state_value_at_position(pos_bottom_right_corner))
-    print(env.compute_new_state_value_at_position(pos_top_left_corner))
-
-    env.update_state_values()
-    print(env)
+    print(f"State values:\n {env}\n")
 
     mean_variation = env.update_state_values()
-    while mean_variation > 1e-5:
+    while mean_variation > 1e-5:  # stop when converged to stable state values
         mean_variation = env.update_state_values()
-        print(env)
+
+    print(f"State values (after convergence):\n {env}\n")
+
+    print(f"Action values:\n {env.action_values}\n")
+
+    env.update_action_values()
+    print(f"Action values (after the update):\n {env.action_values}\n")
