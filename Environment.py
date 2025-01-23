@@ -108,11 +108,13 @@ class Environment:
     def get_state_value_at_position_for_action(self, position: Position) -> float:
         return self.state_values[position.x, position.y]
 
-    def update_policy_softmax(self):
+    def update_policy_with_softmax(self):
         self.policy = np.exp(self.action_values) / np.sum(np.exp(self.action_values), axis=0)
 
     def update_policy_greedily(self):
-        pass
+        self.policy = (self.action_values == np.max(self.action_values, axis=0)).astype(float)
+        self.policy /= np.sum(self.policy, axis=0)  # normalize in case multiple actions have the same action value
+
 
 if __name__ == '__main__':
     np.random.seed(seed=1)
@@ -146,6 +148,10 @@ if __name__ == '__main__':
 
 
     print(f"Policy:\n {env.policy}\n")
-    env.update_policy_softmax()
+    env.update_policy_with_softmax()
     print(f"Policy (after softmax update):\n {env.policy}\n")
 
+    env.create_policy()
+    print(f"Policy:\n {env.policy}\n")
+    env.update_policy_greedily()
+    print(f"Policy (after softmax update):\n {env.policy}\n")
