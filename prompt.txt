@@ -1,0 +1,1 @@
+You are now in place 9 et 9 the reinforcement learning algoritm suggest going right with certitude 0. Knowing additionally your previous mouvement and that in your actual place you are in a grass, you smell grass and you hear sheep, give a direction (left, right, up, down) where you want to go toward the city.
