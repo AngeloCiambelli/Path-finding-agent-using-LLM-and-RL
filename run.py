@@ -1,6 +1,6 @@
 import subprocess
 import numpy.random as rd
-from script_environment import find_clue, make_env
+from script_environment import find_clue, make_2d_environment
 
 def main():
 	

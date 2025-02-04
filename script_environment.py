@@ -2,12 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
-def make_env():
-	env = []
-
+def make_2d_environment():
 	#Make visual environment 
 
-	#f = forest, g = grass, c = city, p = path
+	#  f = forest, g = grass, c = city, p = path
 	visual_env = [	["f","f","f","f","g","g","c","c","c","g"],
 			["f","f","f","f","g","g","c","c","c","g"],
 			["f","g","f","f","g","g","g","p-u","g","g"],
@@ -30,7 +28,7 @@ def make_env():
 			[-2,-2,-1,-1,-2,-2,-2,-2,-2,-2],
 			[-2,-2,-2,-2,-2,-2,-2,-2,-2,-2]]
 
-	#m = moss, g = grass, s = sewage
+	#  m = moss, g = grass, s = sewage
 	odor_env = [	["m","m","m"," ","g","s","s","s","s","s"],
 			["m","m","m"," ","g","s","s","s","s","s"],
 			["m","m"," "," ","g","s","s","s","s","s"],
@@ -42,7 +40,7 @@ def make_env():
 			["g","g"," "," ","g","g","g","g","g","g"],
 			["g","g","g","g","g","g","g","g","g","g"]]
 
-	#m = market, b = birds, e = sheep, h = horse drawn carriage	
+	#  m = market, b = birds, e = sheep, h = horse drawn carriage
 	sound_env = [	["b","b","b"," "," ","m","m"," "," "," "],
 			["b","b","b"," "," ","m","m"," "," "," "],
 			["b","b","b"," "," "," "," ","m"," "," "],
@@ -57,8 +55,14 @@ def make_env():
 	env = [visual_env, odor_env, sound_env, fatigue_env]
 	return(env)
 
+
+def make_1d_environment(size: int):
+	return -1 * np.ones((size))
+
+
+
 def find_clue(coord1, coord2):
-	env = make_env()
+	env = make_2d_environment()
 	cripted_clues = []
 	clues = []
 	cripted_clues.append(env[0][coord1][coord2])

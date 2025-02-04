@@ -1,6 +1,6 @@
 import os
 import sys
-from script_environment import make_env, find_clue
+from script_environment import make_2d_environment, find_clue
 
 
 rl_action = sys.argv[1]		# Where does the RL algorithm want to go
