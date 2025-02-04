@@ -1,4 +1,5 @@
-import os
+import requests
+import json
 import subprocess
 from openai import OpenAI
 from script_environment import find_clue
@@ -14,11 +15,23 @@ def get_openai_client() -> OpenAI:
 	client = OpenAI(api_key=get_openai_apikey())
 	return client
 
-def prompt_openai_api(client, prompt: str):
-	pass
+def get_response_from_openai_prompt(client, prompt: str, context: str ,model:str="gpt-3.5-turbo"):
+	response = client.chat.completions.create(
+		model=model,
+		messages=[
+			{"role": "system", "content": context},
+			{"role": "user", "content": prompt}
+		],
+		temperature=0.7,  # Plus élevé = plus créatif, plus bas = plus précis
+	)
+	return response.choices[0].message.content
 
-def get_llm_call_command_with_prompt(prompt) -> list[str]:
-	return ["ollama", "run", "mistral-openorca"] + [prompt]
+def get_response_from_ollama_prompt(prompt:str, model:str="mistral-openorca") -> list[str]:
+	# Requête à Ollama
+	response = requests.post("http://localhost:11434/api/generate",
+							 json={"model": model, "prompt": prompt, "stream": False})
+
+	return response.json()["response"]
 
 
 def basic_context_prompt() -> str:
@@ -133,24 +146,14 @@ def llm_supervision(position, suggested_direction_untranslated, direction_certit
 	return(supervised_direction, )
 
 if "__main__" == __name__:
-	# Test de l'appel du LLM via python
-	llm_call_command = get_llm_call_command_with_prompt("'Test prompt. Say test.'")
-	# print(llm_call_command)
+	resp = get_response_from_ollama_prompt("This is a test prompt say a few words")
+	print(resp)
 
-	openai_client = get_openai_client()
+	# openai_client = get_openai_client()
+	#
+	# resp = get_response_from_openai_prompt(openai_client, prompt="Test prompt. Say test",
+	# 									   context="You are an assistant")
+	# # Afficher la réponse du modèle
+	# print(resp)
 
-	# Envoyer une requête au modèle GPT-3.5 turbo
-	response = openai_client.chat.completions.create(
-		model="gpt-3.5-turbo",
-		messages=[
-			{"role": "system", "content": "You are an assistant."},
-			{"role": "user", "content": "This is a test. Say test."}
-		],
-		temperature=0.7,  # Plus élevé = plus créatif, plus bas = plus précis
-	)
 
-	# Afficher la réponse du modèle
-	print(response.choices[0].message.content)
-
-	# result = subprocess.run(llm_call_command, capture_output=True, text=True)
-	# print((result.stdout).lower())
