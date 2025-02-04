@@ -1,5 +1,4 @@
 import requests
-import json
 import subprocess
 from openai import OpenAI
 from script_environment import find_clue
@@ -15,6 +14,7 @@ def get_openai_client() -> OpenAI:
 	client = OpenAI(api_key=get_openai_apikey())
 	return client
 
+
 def get_response_from_openai_prompt(client, prompt: str, context: str ,model:str="gpt-3.5-turbo"):
 	response = client.chat.completions.create(
 		model=model,
@@ -26,6 +26,7 @@ def get_response_from_openai_prompt(client, prompt: str, context: str ,model:str
 	)
 	return response.choices[0].message.content
 
+
 def get_response_from_ollama_prompt(prompt:str, model:str="mistral-openorca") -> list[str]:
 	# Requête à Ollama
 	response = requests.post("http://localhost:11434/api/generate",
@@ -34,7 +35,7 @@ def get_response_from_ollama_prompt(prompt:str, model:str="mistral-openorca") ->
 	return response.json()["response"]
 
 
-def basic_context_prompt() -> str:
+def context_prompt_2d() -> str:
 	prompt = "You are placed in a two dimensional environment. Your goal is to find a city using visual, olfactive and"
 	prompt += " auditive clues I will provide. You must choose a direction, between Left, Right, Up and Down. "
 	prompt += "There is three type of environment. Forest, grass fields and road. Forest is the worse environment for "
@@ -42,6 +43,40 @@ def basic_context_prompt() -> str:
 	prompt += "You know that the road is leading to the city somehow, but you don't know where is the city."
 	prompt += "Give me only the direction you choose, without a justification. If you are on in a corner or on a border"
 	prompt += " you won't be able to choose certain direction, but I will tell you when it is the case."
+
+	return prompt
+
+
+def context_prompt_1d() -> str:
+	prompt = "You are placed on a one dimensional environment and you must collaborate with another agent to find the"
+	prompt += "objective state. You must choose a direction between Left and Right. Give me only the direction you "
+	prompt += "choose, without a justification."
+
+	return prompt
+
+
+def prompt_with_action_1d_and_proximity_cue(action: int, is_action_bringing_closer_to_goal: bool):
+	translated_action = "Left" if action == 0 else "Right"
+	prompt = f"The agent wants to go {translated_action}. "
+	prompt += f"This action moves you {'closer to your objective' if is_action_bringing_closer_to_goal else 'away from your objective'}."
+	prompt += "Which direction do you choose ?"
+
+	return prompt
+
+
+def prompt_with_action_2d_and_proximity_cue(action: int, is_action_bringing_closer_to_goal: bool):
+	if action == 0:
+		translated_action = "Up"
+	elif action == 1:
+		translated_action = "Down"
+	elif action == 2:
+		translated_action = "Left"
+	else:
+		translated_action = "Right"
+
+	prompt = f"The agent wants to go {translated_action}. "
+	prompt += f"This action moves you {'closer to your objective' if is_action_bringing_closer_to_goal else 'away from your objective'}."
+	prompt += "Which direction do you choose ?"
 
 	return prompt
 
@@ -144,6 +179,7 @@ def llm_supervision(position, suggested_direction_untranslated, direction_certit
 	
 	history += "you said this in previous iterations : " + justification.stdout + ". "
 	return(supervised_direction, )
+
 
 if "__main__" == __name__:
 	resp = get_response_from_ollama_prompt("This is a test prompt say a few words")
