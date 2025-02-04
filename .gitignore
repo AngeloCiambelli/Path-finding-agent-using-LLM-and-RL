@@ -1,0 +1,4 @@
+*.bib
+OPENAI_API_KEY
+*.pdf
+.venv
