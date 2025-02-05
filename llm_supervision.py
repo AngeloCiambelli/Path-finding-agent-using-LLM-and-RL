@@ -1,31 +1,6 @@
 import requests
 import subprocess
-from openai import OpenAI
 from FancyWorlds import find_clue
-
-
-def get_openai_apikey() -> str:
-	with open("OPENAI_API_KEY", "r") as f:
-		key = f.read()
-	return key
-
-
-def get_openai_client() -> OpenAI:
-	client = OpenAI(api_key=get_openai_apikey())
-	return client
-
-
-def get_response_from_openai_prompt(client, prompt: str, context: str ,model:str="gpt-3.5-turbo"):
-	response = client.chat.completions.create(
-		model=model,
-		messages=[
-			{"role": "system", "content": context},
-			{"role": "user", "content": prompt}
-		],
-		temperature=0.7,  # Plus élevé = plus créatif, plus bas = plus précis
-	)
-	return response.choices[0].message.content
-
 
 def get_response_from_ollama_prompt(prompt:str, model:str="mistral-openorca") -> list[str]:
 	# Requête à Ollama

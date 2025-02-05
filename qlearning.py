@@ -66,7 +66,7 @@ def q_learning_with_llm(env: GridWorld|LineWorld, episodes=100, episodes_with_ll
 
                 # response = llm.get_response_from_openai_prompt(llm_agent, prompt, context)
                 response = llm.get_response_from_ollama_prompt(prompt)
-                print(f"Épisode : {episode+1}.\nAction RL : {"Left" if action == 0 else "Right"}\nRéponse : {response}")
+                print(f"Épisode : {episode+1}.\nAction RL : {action}\nRéponse : {response}")
 
                 action = env.get_action_from_str(response)
 
