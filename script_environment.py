@@ -56,8 +56,8 @@ def make_2d_environment():
 	return(env)
 
 
-def make_1d_environment(size: int):
-	return -1 * np.ones((size))
+def make_1d_environment(size: int, penalty):
+	return penalty * np.ones((size))
 
 
 

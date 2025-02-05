@@ -68,9 +68,9 @@ class GridWorld:
 
 
 class LineWorld:
-	def __init__(self, size=10, goal_position=9, reward=10):
+	def __init__(self, size=10, goal_position=9, penalty=-1, reward=10):
 		self.size = size
-		self.penalty_environment = make_1d_environment(size)
+		self.penalty_environment = make_1d_environment(size, penalty)
 		self.goal_position = goal_position
 		self.reward = reward
 		self.state = 0  # Initialisation à l'extrémité gauche de la ligne
