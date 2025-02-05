@@ -6,7 +6,7 @@ import llm_supervision as llm
 
 
 def q_learning(env: GridWorld|LineWorld, episodes=100, alpha=0.1, gamma=0.9, epsilon=0.1):
-    Q = {state: {action: -10 for action in env.get_action_space()} for state in env.get_state_space()}
+    Q = {state: {action: 0 for action in env.get_action_space()} for state in env.get_state_space()}
     iterations_by_episode = []
 
     for episode in range(episodes):
@@ -39,7 +39,6 @@ def q_learning(env: GridWorld|LineWorld, episodes=100, alpha=0.1, gamma=0.9, eps
 
 
 def q_learning_with_llm(env: GridWorld|LineWorld, episodes=100, episodes_with_llm=5, alpha=0.1, gamma=0.9, epsilon=0.1):
-    Q = {state: {action: 0 for action in env.get_action_space()} for state in env.get_state_space()}
     iterations_by_episode = []
 
     # llm_agent = llm.get_openai_client()
@@ -139,7 +138,8 @@ if "__main__" == __name__:
     mean_times_in_episodes = np.mean(replicates_time, axis=0)
 
 
-    q_table_with_llm, time_in_episodes_llm = q_learning_with_llm(line, episodes=60, episodes_with_llm=5, alpha=0.1, gamma=0.9, epsilon=0.1)
+    q_table_with_llm, time_in_episodes_llm = q_learning_with_llm(line, episodes=60, episodes_with_llm=5, alpha=0.1,
+                                                                 gamma=0.9, epsilon=0.1)
 
     plot_time_by_episode([mean_times_in_episodes, time_in_episodes_llm], label=["RL", "RL+LLM"])
 

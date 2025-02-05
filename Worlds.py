@@ -1,7 +1,7 @@
 import math
 import copy
 
-from script_environment import find_clue, make_2d_environment, make_1d_environment
+from FancyWorlds import find_clue, make_2d_environment, make_1d_environment
 
 
 # Define the grid-world environment

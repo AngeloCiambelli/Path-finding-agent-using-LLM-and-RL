@@ -1,7 +1,7 @@
 import requests
 import subprocess
 from openai import OpenAI
-from script_environment import find_clue
+from FancyWorlds import find_clue
 
 
 def get_openai_apikey() -> str:
