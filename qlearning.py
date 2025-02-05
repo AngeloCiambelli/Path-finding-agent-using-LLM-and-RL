@@ -4,14 +4,6 @@ from llm_supervision import llm_supervision
 
 
 def q_learning(env: GridWorld | LineWorld, episodes=100, alpha=0.1, gamma=0.9, epsilon=0.1):
-    """
-    :param env:
-    :param episodes:
-    :param alpha:
-    :param gamma:
-    :param epsilon: exploration-exploitation parameter. The higher its value, the more exploration.
-    :return:
-    """
     Q = {state: {action: 0 for action in env.get_action_space()} for state in env.get_state_space()}
 
     for episode in range(episodes):

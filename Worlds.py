@@ -1,7 +1,5 @@
-import random
 import math
 import copy
-import numpy as np
 
 from script_environment import find_clue, make_2d_environment, make_1d_environment
 
