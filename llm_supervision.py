@@ -49,8 +49,8 @@ def context_prompt_2d() -> str:
 
 def context_prompt_1d() -> str:
 	prompt = "You are placed on a one dimensional environment and you must collaborate with another agent to find the"
-	prompt += "objective state. You must choose a direction between Left and Right. Give me only the direction you "
-	prompt += "choose, without a justification."
+	prompt += "objective state. You must choose a direction between Left and Right. Answer with only one of these two "
+	prompt += "words, without any justification"
 
 	return prompt
 

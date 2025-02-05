@@ -33,7 +33,7 @@ class GridWorld:
 	    
 	def step(self, action):
 		self.state = self.get_next_state_from_action(action)
-		reward = self.reward if self.state in self.goal_position else self.step_penalty[x][y]
+		reward = self.reward if self.state in self.goal_position else self.step_penalty[self.state[0]][self.state[0]]
 		done = self.state in self.goal_position
 		return self.state, reward, done
     
@@ -54,6 +54,17 @@ class GridWorld:
 		next_dist_to_goal = self.compute_distance_to_goal(next_state)
 
 		return actual_dist_to_goal > next_dist_to_goal
+
+	@staticmethod
+	def get_action_from_str(action: str):
+		if action == 'Up':
+			return 0
+		elif action == 'Down':
+			return 1
+		elif action == 'Left':
+			return 2
+		else:
+			return 3
 
 
 class LineWorld:
@@ -95,6 +106,11 @@ class LineWorld:
 			return action > 0
 		else:
 			return action == 0
+
+	@staticmethod
+	def get_action_from_str(action: str):
+		return 0 if action == 'Left' else 1
+
 
 
 if __name__ == "__main__":
