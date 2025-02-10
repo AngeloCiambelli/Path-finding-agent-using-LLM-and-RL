@@ -201,7 +201,6 @@ def policy_learning_with_llm(env, episodes=100, episodes_with_llm=5, alpha=0.1, 
 			
 		traj_state.append(traj_state_episode)
 		traj_action.append(traj_action_episode)
-
 		iterations_by_episode.append(iteration)
 		
 		#print(policy.policy)
